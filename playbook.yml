@@ -1,7 +1,7 @@
 ---
 
 - name: Update packages and install Docker
-  hosts: all
+  hosts: vm2
   sudo: yes
   apt-get: yes
   tasks:
