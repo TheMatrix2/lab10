@@ -1,17 +1,28 @@
 ---
-
-- name: Update packages and install Docker
+- name: Install Docker and Docker Compose
   hosts: vm2
-  sudo: yes
-  apt-get: yes
+  become: true
   tasks:
-    - name: Update
-      run: sudo apt-get update
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
 
-    - name: install Docker
-      run: |
-        sudo apt-get install apt-transport-https ca-certificates curl gnupg-agent software-properties-common
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-        sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-        sudo apt-get update
-        sudo apt-get install docker-ce docker-ce-cli containerd.io
+    - name: Install Docker Compose
+      apt:
+        name: docker-compose
+        state: present
+
+- name: Deploy Application
+  hosts: vm2
+  become: true
+  tasks:
+    - name: Clone repository
+      git:
+        repo: https://github.com/TheMatrix2/lab08.git
+        dest: /home/vagrant/app/
+
+    - name: Start Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /home/vagrant/app/
